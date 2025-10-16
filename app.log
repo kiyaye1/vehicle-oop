@@ -1,0 +1,175 @@
+2025-10-15T10:29:21.206-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Starting VehicleOopApplication using Java 21 with PID 24972 (D:\SynergisticIT\SynSpring\vehicle-oop\target\classes started by kiyay in D:\SynergisticIT\SynSpring\vehicle-oop)
+2025-10-15T10:29:21.212-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : No active profile set, falling back to 1 default profile: "default"
+2025-10-15T10:29:21.256-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\kiyay\.m2\repository\com\oracle\database\jdbc\ojdbc8\19.8.0.0\ojdbc8-19.8.0.0.jar referenced one or more files that do not exist: file:/C:/Users/kiyay/.m2/repository/com/oracle/database/jdbc/ojdbc8/19.8.0.0/oraclepki.jar
+2025-10-15T10:29:21.257-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-15T10:29:21.258-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-15T10:29:21.862-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-15T10:29:21.916-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 44 ms. Found 1 JPA repository interface.
+2025-10-15T10:29:22.288-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8282 (http)
+2025-10-15T10:29:22.312-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-15T10:29:22.313-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-15T10:29:22.355-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-15T10:29:22.356-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1098 ms
+2025-10-15T10:29:22.509-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-15T10:29:22.545-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-15T10:29:22.569-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-15T10:29:22.822-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-15T10:29:22.846-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-15T10:29:23.144-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@3700caae
+2025-10-15T10:29:23.146-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-15T10:29:23.253-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-15T10:29:23.280-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 21.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-15T10:29:24.145-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-15T10:29:25.154-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T10:29:25.325-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-15T10:29:25.609-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-15T10:29:25.649-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8282 (http) with context path '/'
+2025-10-15T10:29:25.657-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Started VehicleOopApplication in 4.814 seconds (process running for 5.479)
+2025-10-15T10:41:17.731-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-15T10:41:17.732-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-15T10:41:17.734-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-15T10:41:17.927-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-3] com.synex.service.VehicleService         : Saving vehicle: Toyota Corolla
+2025-10-15T10:42:27.302-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-5] com.synex.service.VehicleService         : Saving vehicle: Tesla Model 3
+2025-10-15T10:44:27.178-04:00  INFO 24972 --- [vehicle-oop] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-10-15T10:44:27.180-04:00  INFO 24972 --- [vehicle-oop] [Thread-8] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-15T10:44:27.193-04:00  INFO 24972 --- [vehicle-oop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-15T10:44:27.197-04:00  INFO 24972 --- [vehicle-oop] [Thread-8] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T10:44:27.200-04:00  INFO 24972 --- [vehicle-oop] [Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-10-15T10:44:27.224-04:00  INFO 24972 --- [vehicle-oop] [Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-10-15T10:44:27.306-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Starting VehicleOopApplication using Java 21 with PID 24972 (D:\SynergisticIT\SynSpring\vehicle-oop\target\classes started by kiyay in D:\SynergisticIT\SynSpring\vehicle-oop)
+2025-10-15T10:44:27.307-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : No active profile set, falling back to 1 default profile: "default"
+2025-10-15T10:44:27.433-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-15T10:44:27.440-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 6 ms. Found 1 JPA repository interface.
+2025-10-15T10:44:27.534-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8282 (http)
+2025-10-15T10:44:27.536-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-15T10:44:27.536-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-15T10:44:27.552-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-15T10:44:27.552-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 244 ms
+2025-10-15T10:44:27.591-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-15T10:44:27.593-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-15T10:44:27.601-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-15T10:44:27.603-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2025-10-15T10:44:27.656-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection oracle.jdbc.driver.T4CConnection@19f72e5
+2025-10-15T10:44:27.656-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2025-10-15T10:44:27.659-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-15T10:44:27.661-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 21.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-15T10:44:27.819-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-15T10:44:28.801-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T10:44:28.850-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-15T10:44:28.950-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-15T10:44:28.960-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8282 (http) with context path '/'
+2025-10-15T10:44:28.964-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Started VehicleOopApplication in 1.687 seconds (process running for 908.787)
+2025-10-15T10:44:28.966-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-10-15T10:44:43.648-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-15T10:44:43.648-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-15T10:44:43.649-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-15T10:44:43.654-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-1] com.synex.service.VehicleService         : Saving vehicle: Toyota Corolla
+2025-10-15T10:45:18.634-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-4] com.synex.service.VehicleService         : Saving vehicle: Toyota Corolla
+2025-10-15T10:48:21.281-04:00  INFO 24972 --- [vehicle-oop] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-10-15T10:48:21.281-04:00  INFO 24972 --- [vehicle-oop] [Thread-86] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-15T10:48:21.289-04:00  INFO 24972 --- [vehicle-oop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-15T10:48:21.290-04:00  INFO 24972 --- [vehicle-oop] [Thread-86] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T10:48:21.291-04:00  INFO 24972 --- [vehicle-oop] [Thread-86] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2025-10-15T10:48:21.304-04:00  INFO 24972 --- [vehicle-oop] [Thread-86] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2025-10-15T10:48:21.377-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Starting VehicleOopApplication using Java 21 with PID 24972 (D:\SynergisticIT\SynSpring\vehicle-oop\target\classes started by kiyay in D:\SynergisticIT\SynSpring\vehicle-oop)
+2025-10-15T10:48:21.377-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : No active profile set, falling back to 1 default profile: "default"
+2025-10-15T10:48:21.473-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-15T10:48:21.478-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 5 ms. Found 1 JPA repository interface.
+2025-10-15T10:48:21.535-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8282 (http)
+2025-10-15T10:48:21.536-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-15T10:48:21.536-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-15T10:48:21.554-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-15T10:48:21.554-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 176 ms
+2025-10-15T10:48:21.578-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-15T10:48:21.579-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-15T10:48:21.585-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-15T10:48:21.586-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2025-10-15T10:48:21.639-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection oracle.jdbc.driver.T4CConnection@3c314b9f
+2025-10-15T10:48:21.639-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2025-10-15T10:48:21.641-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-15T10:48:21.644-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 21.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-15T10:48:21.791-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-15T10:48:21.933-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T10:48:21.977-04:00  WARN 24972 --- [vehicle-oop] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-15T10:48:22.044-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-15T10:48:22.053-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8282 (http) with context path '/'
+2025-10-15T10:48:22.057-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Started VehicleOopApplication in 0.696 seconds (process running for 1141.879)
+2025-10-15T10:48:22.058-04:00  INFO 24972 --- [vehicle-oop] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-10-15T10:49:33.704-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-15T10:49:33.704-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-15T10:49:33.707-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2025-10-15T10:49:33.715-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-2] com.synex.service.VehicleService         : Saving vehicle: Tesla Model 3
+2025-10-15T10:50:48.876-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-5] com.synex.service.VehicleService         : Saving vehicle: Toyota Corolla
+2025-10-15T10:52:11.747-04:00  WARN 24972 --- [vehicle-oop] [http-nio-8282-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.synex.exception.VehicleNotFoundException: Vehicle with ID 1 not found]
+2025-10-15T10:54:42.799-04:00  WARN 24972 --- [vehicle-oop] [http-nio-8282-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.synex.exception.VehicleNotFoundException: Vehicle with ID 1 not found]
+2025-10-15T10:54:52.480-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-3] com.synex.service.VehicleService         : Started vehicle: Tesla Model 3 starts using electric motor. Battery: 90%
+2025-10-15T10:55:21.444-04:00  INFO 24972 --- [vehicle-oop] [http-nio-8282-exec-5] com.synex.service.VehicleService         : Started vehicle: Tesla Model 3 starts using electric motor. Battery: 90%
+2025-10-15T13:15:38.384-04:00  WARN 24972 --- [vehicle-oop] [HikariPool-3:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Thread starvation or clock leap detected (housekeeper delta=2h9m46s404ms515µs200ns).
+2025-10-15T13:16:37.742-04:00  WARN 24972 --- [vehicle-oop] [HikariPool-3:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Thread starvation or clock leap detected (housekeeper delta=1m4s64ms67µs).
+2025-10-15T14:05:41.499-04:00  INFO 24972 --- [vehicle-oop] [RMI TCP Connection(94)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2025-10-15T14:05:41.501-04:00  INFO 24972 --- [vehicle-oop] [RMI TCP Connection(94)-127.0.0.1] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-15T14:05:41.508-04:00  INFO 24972 --- [vehicle-oop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-15T14:05:41.510-04:00  INFO 24972 --- [vehicle-oop] [RMI TCP Connection(94)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T14:05:41.511-04:00  INFO 24972 --- [vehicle-oop] [RMI TCP Connection(94)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2025-10-15T14:05:41.524-04:00  INFO 24972 --- [vehicle-oop] [RMI TCP Connection(94)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2025-10-15T15:51:52.513-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Starting VehicleOopApplication using Java 21 with PID 26752 (D:\SynergisticIT\SynSpring\vehicle-oop\target\classes started by kiyay in D:\SynergisticIT\SynSpring\vehicle-oop)
+2025-10-15T15:51:52.515-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : No active profile set, falling back to 1 default profile: "default"
+2025-10-15T15:51:52.571-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\kiyay\.m2\repository\com\oracle\database\jdbc\ojdbc8\19.8.0.0\ojdbc8-19.8.0.0.jar referenced one or more files that do not exist: file:/C:/Users/kiyay/.m2/repository/com/oracle/database/jdbc/ojdbc8/19.8.0.0/oraclepki.jar
+2025-10-15T15:51:52.572-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-15T15:51:52.572-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-15T15:51:53.179-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-15T15:51:53.232-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 1 JPA repository interface.
+2025-10-15T15:51:53.694-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8282 (http)
+2025-10-15T15:51:53.715-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-15T15:51:53.716-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-15T15:51:53.781-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-15T15:51:53.781-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1208 ms
+2025-10-15T15:51:54.002-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-15T15:51:54.081-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-15T15:51:54.125-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-15T15:51:54.444-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-15T15:51:54.497-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-15T15:51:54.813-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@882e921
+2025-10-15T15:51:54.814-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-15T15:51:54.974-04:00  WARN 26752 --- [vehicle-oop] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-15T15:51:55.003-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 21.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-15T15:51:56.160-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-15T15:51:56.547-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T15:51:56.759-04:00  WARN 26752 --- [vehicle-oop] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-15T15:51:57.106-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-15T15:51:57.153-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8282 (http) with context path '/'
+2025-10-15T15:51:57.164-04:00  INFO 26752 --- [vehicle-oop] [restartedMain] com.synex.VehicleOopApplication          : Started VehicleOopApplication in 5.054 seconds (process running for 5.749)
+2025-10-15T15:56:14.517-04:00  INFO 26752 --- [vehicle-oop] [RMI TCP Connection(7)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2025-10-15T15:56:14.520-04:00  INFO 26752 --- [vehicle-oop] [RMI TCP Connection(7)-127.0.0.1] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-15T15:56:14.534-04:00  INFO 26752 --- [vehicle-oop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-15T15:56:14.540-04:00  INFO 26752 --- [vehicle-oop] [RMI TCP Connection(7)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15T15:56:14.542-04:00  INFO 26752 --- [vehicle-oop] [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-10-15T15:56:14.559-04:00  INFO 26752 --- [vehicle-oop] [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
