@@ -51,17 +51,17 @@ pipeline {
       steps {
         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-            sh 'aws --version || true'
             dir('infra') {
               sh 'terraform fmt -recursive'
-              sh 'terraform validate'
               sh 'terraform init -input=false -upgrade'
+              sh 'terraform validate'
               sh 'terraform apply -auto-approve -input=false'
             }
           }
         }
       }
     }
+
 
     stage('Deploy to EKS (Ansible, image update)') {
       steps {
