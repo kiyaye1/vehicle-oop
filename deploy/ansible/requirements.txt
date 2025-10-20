@@ -1,0 +1,4 @@
+ansible-core>=2.16,<2.18
+kubernetes>=26,<32
+pyyaml
+requests
