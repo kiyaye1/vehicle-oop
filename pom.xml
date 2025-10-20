@@ -70,7 +70,6 @@
              <configuration>
                  <release>21</release>
                  <fork>true</fork>
-                 <executable>/usr/bin/javac</executable>
              </configuration>
            </plugin>
 
