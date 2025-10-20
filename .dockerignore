@@ -1,0 +1,7 @@
+.git
+target
+.mvn
+*.log
+logs
+Dockerfile
+README.md
