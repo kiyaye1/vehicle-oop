@@ -72,25 +72,26 @@ pipeline {
               sh '''
                 set -e
 
-                # Try to create a venv. If ensurepip is missing, install python3-venv.
+                # 1) Try normal venv; if ensurepip is missing, make venv without pip
                 if ! python3 -m venv .venv 2>/dev/null; then
-                  echo "python3-venv not present; attempting install..."
-                  (command -v sudo >/dev/null && sudo apt-get update && sudo apt-get install -y python3-venv python3-pip) \
-                  || (apt-get update && apt-get install -y python3-venv python3-pip) || true
-                fi
-
-                # Retry; if it still fails, fall back to virtualenv in user space.
-                if ! python3 -m venv .venv 2>/dev/null; then
-                  echo "Falling back to virtualenv..."
-                  python3 -m pip install --user --upgrade pip
-                  python3 -m pip install --user virtualenv
-                  ~/.local/bin/virtualenv .venv
+                  echo "ensurepip missing; creating venv without pip and bootstrapping..."
+                  python3 -m venv --without-pip .venv
+                  # Fetch get-pip.py safely with Python stdlib
+                  python3 - <<'PY'
+import ssl, urllib.request, sys, os
+url = "https://bootstrap.pypa.io/get-pip.py"
+print("Downloading get-pip.py ...")
+data = urllib.request.urlopen(url, context=ssl.create_default_context()).read()
+open("get-pip.py","wb").write(data)
+print("Saved get-pip.py")
+PY
+                  . .venv/bin/activate
+                  python get-pip.py
                 fi
 
                 . .venv/bin/activate
                 pip install --upgrade pip
                 pip install "ansible-core>=2.16,<2.18" "kubernetes>=26,<32" pyyaml requests
-
                 ansible-galaxy collection install -r requirements.yml
 
                 ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
