@@ -43,7 +43,12 @@ resource "aws_eks_node_group" "ng" {
   node_group_name = "ng-1"
   node_role_arn   = aws_iam_role.eks_node.arn
   subnet_ids      = [aws_subnet.public_a.id, aws_subnet.public_b.id]
-  scaling_config  { desired_size = 2, max_size = 2, min_size = 1 }
+  scaling_config {
+      desired_size = 2
+      max_size     = 2
+      min_size     = 1
+  }
+
   instance_types  = ["t3.medium"]
   depends_on = [
     aws_eks_cluster.this,
