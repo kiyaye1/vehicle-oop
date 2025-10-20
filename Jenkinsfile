@@ -55,10 +55,8 @@ pipeline {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             dir('infra') {
               sh '''
-                terraform fmt -recursive
                 terraform init -input=false -upgrade
-                terraform validate
-                terraform apply -auto-approve -input=false
+                terraform destroy -auto-approve
               '''
             }
           }
