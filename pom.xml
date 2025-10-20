@@ -64,15 +64,16 @@
         <plugins>
             <!-- Ensure compiler uses Java 21 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <release>21</release>
-                    <fork>true</fork>
-                    <executable>/usr/lib/jvm/java-21-openjdk-amd64/bin/javac</executable>
-                </configuration>
-            </plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-compiler-plugin</artifactId>
+             <version>3.11.0</version>
+             <configuration>
+                 <release>21</release>
+                 <fork>true</fork>
+                 <executable>/usr/bin/javac</executable>
+             </configuration>
+           </plugin>
+
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
