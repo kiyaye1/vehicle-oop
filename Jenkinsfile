@@ -53,7 +53,9 @@ pipeline {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             sh 'aws --version || true'
             dir('infra') {
-              sh 'terraform init -input=false'
+              sh 'terraform fmt -recursive'
+              sh 'terraform validate'
+              sh 'terraform init -input=false -upgrade'
               sh 'terraform apply -auto-approve -input=false'
             }
           }
