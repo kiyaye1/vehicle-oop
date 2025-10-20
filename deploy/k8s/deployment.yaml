@@ -15,28 +15,17 @@ spec:
     spec:
       containers:
         - name: vehicle-app
-          image: nginx:alpine
+          image: "{{ deploy_image }}"   # set by ansible: -e deploy_image=...
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
           env:
             - name: SERVER_PORT
               value: "8282"
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: url
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: username
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: password
+            # No SPRING_DATASOURCE_* vars — Spring Boot will auto-configure H2
+            # Optionally, you can set:
+            # - name: SPRING_PROFILES_ACTIVE
+            #   value: "default"
           readinessProbe:
             httpGet:
               path: /actuator/health
