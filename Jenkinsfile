@@ -51,10 +51,7 @@ pipeline {
 
     stage('Provision/Update Infra (Terraform)') {
       steps {
-        withCredentials([
-          string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
-        ]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             dir('infra') {
               sh '''
@@ -71,10 +68,7 @@ pipeline {
 
     stage('Deploy to EKS (Ansible)') {
       steps {
-        withCredentials([
-          string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
-        ]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
             dir('deploy/ansible') {
@@ -92,10 +86,7 @@ pipeline {
   post {
     success {
       echo "Deployment successful!"
-      withCredentials([
-        string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-        string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
-      ]) {
+      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
         withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
           sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
           sh 'kubectl -n vehicle get svc vehicle-svc || true'
