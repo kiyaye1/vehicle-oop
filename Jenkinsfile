@@ -20,11 +20,18 @@ pipeline {
       steps { checkout scm }
     }
 
-    stage('Build & Unit Test') {
-      steps {
-        sh 'mvn -B -DskipITs=true clean verify'
-      }
-    }
+   stage('Build & Unit Test') {
+  steps {
+    sh '''
+      echo "=== JAVA VERSION ==="
+      java -version
+      echo "=== MAVEN VERSION ==="
+      mvn -v
+    '''
+    sh 'mvn -B -DskipITs=true clean verify'
+  }
+}
+ 
 
     stage('Docker Build & Push (Docker Hub)') {
       steps {
