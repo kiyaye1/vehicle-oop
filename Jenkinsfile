@@ -17,7 +17,9 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps { checkout scm }
+      steps {
+        checkout scm
+      }
     }
 
     stage('Build & Unit Test') {
@@ -49,54 +51,36 @@ pipeline {
 
     stage('Provision/Update Infra (Terraform)') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+        withCredentials([
+          string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+          string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             dir('infra') {
-              sh 'terraform fmt -recursive'
-              sh 'terraform init -input=false -upgrade'
-              sh 'terraform validate'
-              sh 'terraform apply -auto-approve -input=false'
+              sh '''
+                terraform fmt -recursive
+                terraform init -input=false -upgrade
+                terraform validate
+                terraform apply -auto-approve -input=false
+              '''
             }
           }
         }
       }
     }
 
-    stage('Deploy to EKS (Ansible, image update)') {
+    stage('Deploy to EKS (Ansible)') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+        withCredentials([
+          string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+          string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
-
             dir('deploy/ansible') {
               sh '''
-                set -e
-
-                # 1) Try normal venv; if ensurepip is missing, make venv without pip
-                if ! python3 -m venv .venv 2>/dev/null; then
-                  echo "ensurepip missing; creating venv without pip and bootstrapping..."
-                  python3 -m venv --without-pip .venv
-                  # Fetch get-pip.py safely with Python stdlib
-                  python3 - <<'PY'
-import ssl, urllib.request, sys, os
-url = "https://bootstrap.pypa.io/get-pip.py"
-print("Downloading get-pip.py ...")
-data = urllib.request.urlopen(url, context=ssl.create_default_context()).read()
-open("get-pip.py","wb").write(data)
-print("Saved get-pip.py")
-PY
-                  . .venv/bin/activate
-                  python get-pip.py
-                fi
-
-                . .venv/bin/activate
-                pip install --upgrade pip
-                pip install "ansible-core>=2.16,<2.18" "kubernetes>=26,<32" pyyaml requests
-                ansible-galaxy collection install -r requirements.yml
-
-                ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
-                ansible-playbook -i inventory.ini deploy.yml \
-                  -e deploy_image='${IMAGE_LATEST}'
+                chmod +x deploy.sh
+                ./deploy.sh "${IMAGE_LATEST}"
               '''
             }
           }
@@ -107,12 +91,19 @@ PY
 
   post {
     success {
-      echo "Deployed image: ${IMAGE_LATEST}"
-      sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
-      sh 'kubectl -n vehicle get svc vehicle-svc || true'
+      echo "Deployment successful!"
+      withCredentials([
+        string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+        string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+      ]) {
+        withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+          sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
+          sh 'kubectl -n vehicle get svc vehicle-svc || true'
+        }
+      }
     }
     failure {
-      echo "Pipeline failed"
+      echo "Pipeline failed."
     }
   }
 }
