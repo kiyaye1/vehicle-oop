@@ -49,11 +49,9 @@ pipeline {
 
     stage('Provision/Update Infra (Terraform)') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'aws-creds',
-                           usernameVariable: 'AWS_ACCESS_KEY_ID',
-                           passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-            sh 'aws --version || true'  
+            sh 'aws --version || true'
             dir('infra') {
               sh 'terraform init -input=false'
               sh 'terraform apply -auto-approve -input=false'
@@ -65,9 +63,7 @@ pipeline {
 
     stage('Deploy to EKS (Ansible, image update)') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'aws-creds',
-                           usernameVariable: 'AWS_ACCESS_KEY_ID',
-                           passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
             dir('deploy/ansible') {
