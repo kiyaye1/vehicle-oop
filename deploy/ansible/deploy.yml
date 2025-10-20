@@ -1,0 +1,48 @@
+- hosts: local
+  gather_facts: false
+  vars:
+    kube_ns: vehicle
+    aws_region: "{{ lookup('env','AWS_REGION') }}"
+    eks_cluster: "{{ lookup('env','EKS_CLUSTER') }}"
+  tasks:
+    - name: Configure kubeconfig for EKS
+      ansible.builtin.command:
+        cmd: aws eks update-kubeconfig --name {{ eks_cluster }} --region {{ aws_region }}
+
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        state: present
+        src: ../k8s/namespace.yaml
+
+    - name: Create/Update Oracle Secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: oracle-secret
+            namespace: "{{ kube_ns }}"
+          type: Opaque
+          data:
+            url: "{{ oracle_url | b64encode }}"
+            username: "{{ oracle_user | b64encode }}"
+            password: "{{ oracle_pass | b64encode }}"
+
+    - name: Apply Service
+      kubernetes.core.k8s:
+        state: present
+        src: ../k8s/service.yaml
+
+    - name: Apply Deployment (generic image)
+      kubernetes.core.k8s:
+        state: present
+        src: ../k8s/deployment.yaml
+
+    - name: Update deployment image to the freshly built Docker Hub image
+      ansible.builtin.command:
+        cmd: kubectl -n {{ kube_ns }} set image deploy/vehicle-app vehicle-app={{ deploy_image }}
+
+    - name: Wait for rollout to complete
+      ansible.builtin.command:
+        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout=180s
