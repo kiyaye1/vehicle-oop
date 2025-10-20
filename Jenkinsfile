@@ -62,39 +62,39 @@ pipeline {
       }
     }
 
-    stage('Deploy to EKS (Ansible, image update)') {
-      steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-
-            // Make sure kubectl context is set
-            sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
-
-            dir('deploy/ansible') {
-              sh '''
-                set -e
-                # Create & activate a local virtualenv
-                python3 -m venv .venv
-                . .venv/bin/activate
-                pip install --upgrade pip
-
-                # Install Ansible + Kubernetes Python client in the venv
-                pip install "ansible-core>=2.16,<2.18" "kubernetes>=26,<32" pyyaml requests
-
-                # Install Ansible collections you use (e.g. kubernetes.core)
-                ansible-galaxy collection install -r requirements.yml
-
-                # Use the venv's interpreter so k8s libs are available to the k8s modules
-                ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
-                ansible-playbook -i inventory.ini deploy.yml \
-                  -e deploy_image="${IMAGE_LATEST}"
-              '''
-            }
-          }
-        }
-      }
+    dir('deploy/ansible') {
+      sh '''
+        set -e
+    
+        # Try to create a venv. If it fails (ensurepip missing), install python3-venv.
+        if ! python3 -m venv .venv 2>/dev/null; then
+          echo "python3-venv not present; attempting install..."
+          # Try with sudo first; if not available, try direct (for root agents)
+          (command -v sudo >/dev/null && sudo apt-get update && sudo apt-get install -y python3-venv python3-pip) \
+          || (apt-get update && apt-get install -y python3-venv python3-pip) \
+          || true
+        fi
+    
+        # Retry venv creation; if it still fails, fall back to virtualenv in user space.
+        if ! python3 -m venv .venv 2>/dev/null; then
+          echo "Falling back to virtualenv in user space..."
+          python3 -m pip install --user --upgrade pip
+          python3 -m pip install --user virtualenv
+          ~/.local/bin/virtualenv .venv
+        fi
+    
+        . .venv/bin/activate
+        pip install --upgrade pip
+        pip install "ansible-core>=2.16,<2.18" "kubernetes>=26,<32" pyyaml requests
+    
+        ansible-galaxy collection install -r requirements.yml
+    
+        ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
+        ansible-playbook -i inventory.ini deploy.yml \
+          -e deploy_image="${IMAGE_LATEST}"
+      '''
     }
-  } 
+ 
 
   post {
     success {
