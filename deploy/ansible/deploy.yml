@@ -1,9 +1,11 @@
 - hosts: local
   gather_facts: false
+
   vars:
     kube_ns: vehicle
     aws_region: "{{ lookup('env','AWS_REGION') }}"
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') }}"
+
   tasks:
     - name: Configure kubeconfig for EKS
       ansible.builtin.command:
@@ -13,33 +15,32 @@
       kubernetes.core.k8s:
         state: present
         src: ../k8s/namespace.yaml
+        template: true
 
-    - name: Create/Update Oracle Secret
+    # (optional) clean up any old oracle secret if it exists
+    - name: Remove deprecated Oracle secret if present
       kubernetes.core.k8s:
-        state: present
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: oracle-secret
-            namespace: "{{ kube_ns }}"
-          type: Opaque
-          data:
-            url: "{{ oracle_url | b64encode }}"
-            username: "{{ oracle_user | b64encode }}"
-            password: "{{ oracle_pass | b64encode }}"
+        state: absent
+        kind: Secret
+        name: oracle-secret
+        namespace: "{{ kube_ns }}"
+      ignore_errors: true
 
     - name: Apply Service
       kubernetes.core.k8s:
         state: present
         src: ../k8s/service.yaml
+        template: true
 
-    - name: Apply Deployment (generic image)
+    - name: Apply Deployment (uses {{ deploy_image }})
       kubernetes.core.k8s:
         state: present
         src: ../k8s/deployment.yaml
+        template: true
 
-    - name: Update deployment image to the freshly built Docker Hub image
+    # If your deployment.yaml already uses {{ deploy_image }}, the step below isn’t needed.
+    # Keeping it as a safety override is fine; it will update the image explicitly.
+    - name: Force image update to freshly built tag
       ansible.builtin.command:
         cmd: kubectl -n {{ kube_ns }} set image deploy/vehicle-app vehicle-app={{ deploy_image }}
 
