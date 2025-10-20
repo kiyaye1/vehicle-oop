@@ -21,7 +21,11 @@ pipeline {
     }
     stage('Build & Unit Test') {
       steps {
-        sh 'mvn -B -DskipITs=true clean verify'
+        sh '''
+            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+            export PATH=$JAVA_HOME/bin:$PATH
+            mvn -B -DskipITs=true clean verify
+        '''
       }
     } 
     stage('Docker Build & Push (Docker Hub)') {
