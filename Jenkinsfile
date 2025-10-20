@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   environment {
-    JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64'
-    PATH      = "${JAVA_HOME}/bin:${PATH}"
+    JAVA_HOME   = '/usr/lib/jvm/java-21-openjdk-amd64'
+    PATH        = "${JAVA_HOME}/bin:${PATH}"
 
     AWS_REGION  = 'us-east-2'
     EKS_CLUSTER = 'vehicle-eks'
@@ -27,7 +27,6 @@ pipeline {
           export PATH=$JAVA_HOME/bin:$PATH
           java -version
           mvn  -version
-          # H2 is now the default DB (no Oracle vars)
           mvn -B clean verify
         '''
       }
@@ -43,17 +42,22 @@ pipeline {
         sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
         sh 'docker build -t "$IMAGE_SHA" .'
         sh 'docker push "$IMAGE_SHA"'
-        sh 'docker tag  "$IMAGE_SHA" "$IMAGE_LATEST"'
+        sh 'docker tag "$IMAGE_SHA" "$IMAGE_LATEST"'
         sh 'docker push "$IMAGE_LATEST"'
       }
     }
 
     stage('Provision/Update Infra (Terraform)') {
       steps {
-        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-          dir('infra') {
-            sh 'terraform init -input=false'
-            sh 'terraform apply -auto-approve -input=false'
+        withCredentials([usernamePassword(credentialsId: 'aws-creds',
+                           usernameVariable: 'AWS_ACCESS_KEY_ID',
+                           passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+            sh 'aws --version || true'  
+            dir('infra') {
+              sh 'terraform init -input=false'
+              sh 'terraform apply -auto-approve -input=false'
+            }
           }
         }
       }
@@ -61,13 +65,18 @@ pipeline {
 
     stage('Deploy to EKS (Ansible, image update)') {
       steps {
-        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-          dir('deploy/ansible') {
-            sh 'ansible-galaxy collection install -r requirements.yml'
-            sh """
-              ansible-playbook -i inventory.ini deploy.yml \
-                -e deploy_image=${IMAGE_LATEST}
-            """
+        withCredentials([usernamePassword(credentialsId: 'aws-creds',
+                           usernameVariable: 'AWS_ACCESS_KEY_ID',
+                           passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+            sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
+            dir('deploy/ansible') {
+              sh 'ansible-galaxy collection install -r requirements.yml'
+              sh """
+                ansible-playbook -i inventory.ini deploy.yml \
+                  -e deploy_image=${IMAGE_LATEST}
+              """
+            }
           }
         }
       }
@@ -77,6 +86,7 @@ pipeline {
   post {
     success {
       echo "Deployed image: ${IMAGE_LATEST}"
+      sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
       sh 'kubectl -n vehicle get svc vehicle-svc || true'
     }
     failure {
