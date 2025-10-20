@@ -65,22 +65,32 @@ pipeline {
 
     stage('Deploy to EKS (Ansible, image update)') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+        withCredentials([usernamePassword(credentialsId: 'aws-creds',
+                           usernameVariable: 'AWS_ACCESS_KEY_ID',
+                           passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+    
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
+    
             dir('deploy/ansible') {
-              sh 'ansible-galaxy collection install -r requirements.yml'
-              sh """
+              sh '''
+                python3 -m venv .venv
+                . .venv/bin/activate
+                pip install --upgrade pip
+    
+                pip install "kubernetes>=26,<32"  pyyaml  requests
+    
+                ansible-galaxy collection install -r requirements.yml
+    
+                ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
                 ansible-playbook -i inventory.ini deploy.yml \
-                  -e deploy_image=${IMAGE_LATEST}
-              """
+                  -e deploy_image='${IMAGE_LATEST}'
+              '''
             }
           }
         }
       }
     }
-  }
-
   post {
     success {
       echo "Deployed image: ${IMAGE_LATEST}"
