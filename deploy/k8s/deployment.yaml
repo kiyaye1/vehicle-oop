@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: vehicle-app
-          image: "{{ deploy_image }}"   
+          image: "{{ deploy_image }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
@@ -26,11 +26,13 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8282
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8282
-            initialDelaySeconds: 40
-            periodSeconds: 20
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 5
