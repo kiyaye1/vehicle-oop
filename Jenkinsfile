@@ -1,124 +1,102 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    JAVA_HOME   = '/usr/lib/jvm/java-21-openjdk-amd64'
-    PATH        = "${JAVA_HOME}/bin:${PATH}"
-
-    AWS_REGION  = 'us-east-2'
-    EKS_CLUSTER = 'vehicle-eks'
-
-    DOCKER_USER = credentials('dockerhub-user')
-    DOCKER_PASS = credentials('dockerhub-pass')
-    DOCKER_REPO = 'kiyaye1/vehicle-oop'
-  }
-
-  options { timestamps() }
-
-  stages {
-
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        JAVA_HOME   = '/usr/lib/jvm/java-21-openjdk-amd64'
+        PATH        = "${JAVA_HOME}/bin:${PATH}"
+        AWS_REGION  = 'us-east-2'
+        EKS_CLUSTER = 'vehicle-eks'
+        DOCKER_USER = credentials('dockerhub-user')
+        DOCKER_PASS = credentials('dockerhub-pass')
+        DOCKER_REPO = 'kiyaye1/vehicle-oop'
     }
 
-    stage('Build & Unit Test') {
-      steps {
-        sh '''
-          export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-          export PATH=$JAVA_HOME/bin:$PATH
-          java -version
-          mvn -version
-          mvn -B clean verify
-        '''
-      }
+    options {
+        timestamps()
     }
 
-    stage('Docker Build & Push (Docker Hub)') {
-      steps {
-        script {
-          env.IMAGE_TAG    = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
-          env.IMAGE_SHA    = "docker.io/${DOCKER_REPO}:${IMAGE_TAG}"
-          env.IMAGE_LATEST = "docker.io/${DOCKER_REPO}:latest"
-        }
+    stages {
 
-        sh '''
-          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-          docker build -t "$IMAGE_SHA" .
-          docker push "$IMAGE_SHA"
-          docker tag "$IMAGE_SHA" "$IMAGE_LATEST"
-          docker push "$IMAGE_LATEST"
-
-          echo "⏳ Waiting for Docker Hub image to propagate..."
-          sleep 20
-          docker pull "$IMAGE_LATEST"
-        '''
-      }
-    }
-
-    stage('Provision/Update Infra (Terraform)') {
-      steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-            dir('infra') {
-              sh '''
-                terraform fmt -recursive
-                terraform init -input=false -upgrade
-                terraform validate
-                terraform apply -auto-approve -input=false
-              '''
+        stage('Checkout') {
+            steps {
+                checkout scm
             }
-          }
         }
-      }
-    }
 
-    stage('Deploy to EKS (Ansible)') {
-      steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-            sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
-
-            dir('deploy/ansible') {
-              sh '''
-                chmod +x deploy.sh
-                ./deploy.sh "${IMAGE_LATEST}"
-              '''
+        stage('Build & Unit Test') {
+            steps {
+                sh '''
+                    export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+                    export PATH=$JAVA_HOME/bin:$PATH
+                    java -version
+                    mvn -version
+                    mvn -B clean verify
+                '''
             }
-          }
         }
-      }
+
+        stage('Docker Build & Push (Docker Hub)') {
+            steps {
+                script {
+                    env.IMAGE_TAG = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                    env.IMAGE_SHA = "docker.io/${DOCKER_REPO}:${IMAGE_TAG}"
+                    env.IMAGE_LATEST = "docker.io/${DOCKER_REPO}:latest"
+                }
+                sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                sh 'docker build -t "$IMAGE_SHA" .'
+                sh 'docker push "$IMAGE_SHA"'
+                sh 'docker tag "$IMAGE_SHA" "$IMAGE_LATEST"'
+                sh 'docker push "$IMAGE_LATEST"'
+            }
+        }
+
+        stage('Provision/Update Infra (Terraform)') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+                        dir('infra') {
+                            sh '''
+                                terraform fmt -recursive
+                                terraform init -input=false -upgrade
+                                terraform validate
+                                terraform apply -auto-approve -input=false
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EKS (Ansible)') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+                        sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
+                        dir('deploy/ansible') {
+                            sh '''
+                                chmod +x deploy.sh
+                                ./deploy.sh "${IMAGE_LATEST}"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    stage('Post-Deploy Health Check') {
-      steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-            sh """
-              aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}
-              echo '🔍 Checking rollout status...'
-              kubectl -n vehicle rollout status deploy/vehicle-app --timeout=600s
-              echo '✅ Deployment healthy!'
-            """
-          }
+    post {
+        success {
+            echo "✅ Deployment successful!"
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+                    sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
+                    sh 'kubectl -n vehicle get svc vehicle-svc || true'
+                }
+            }
         }
-      }
-    }
-  }
 
-  post {
-    success {
-      echo "🎉 Deployment successful!"
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-        withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
-          sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
-          sh 'kubectl -n vehicle get svc vehicle-svc || true'
+        failure {
+            echo "❌ Pipeline failed."
         }
-      }
     }
-    failure {
-      echo "❌ Pipeline failed. Check rollout logs above."
-    }
-  }
 }
