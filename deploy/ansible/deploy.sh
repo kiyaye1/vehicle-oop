@@ -3,10 +3,11 @@ set -e
 
 IMAGE_LATEST="$1"
 
-echo "Starting Ansible deployment using image: $IMAGE_LATEST"
+echo "🚀 Starting Ansible deployment using image: $IMAGE_LATEST"
 
 chmod +x "$0" 2>/dev/null || true
 
+# --- Setup Python virtual environment ---
 if [ ! -d ".venv" ]; then
   echo "Creating Python virtual environment..."
   python3 -m venv .venv || {
@@ -36,9 +37,19 @@ if [ -f requirements.yml ]; then
   ansible-galaxy collection install -r requirements.yml
 fi
 
-echo "Running Ansible playbook..."
+# --- Run Ansible with retry and longer timeout ---
+echo "Running Ansible playbook with retry and extended timeout..."
 ANSIBLE_PYTHON_INTERPRETER="$(pwd)/.venv/bin/python" \
 ansible-playbook -i inventory.ini deploy.yml \
-  -e deploy_image="$IMAGE_LATEST"
+  -e deploy_image="$IMAGE_LATEST" \
+  --extra-vars "rollout_timeout=600" || {
 
-echo "Deployment complete."
+  echo "⚠️ First rollout attempt failed. Retrying in 60 seconds..."
+  sleep 60
+
+  ansible-playbook -i inventory.ini deploy.yml \
+    -e deploy_image="$IMAGE_LATEST" \
+    --extra-vars "rollout_timeout=600"
+}
+
+echo "✅ Deployment complete."
