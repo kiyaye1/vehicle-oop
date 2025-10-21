@@ -5,31 +5,51 @@
     kube_ns: vehicle
     aws_region: "{{ lookup('env','AWS_REGION') }}"
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') }}"
+    rollout_timeout: "{{ rollout_timeout | default('600s') }}"  # default 10 min timeout
 
   tasks:
-    - name: Configure kubeconfig for EKS
+
+    - name: 🧭 Configure kubeconfig for EKS
       ansible.builtin.command:
         cmd: aws eks update-kubeconfig --name {{ eks_cluster }} --region {{ aws_region }}
+      changed_when: false
 
-    - name: Ensure namespace exists
+    - name: 🧩 Ensure namespace exists
       kubernetes.core.k8s:
         state: present
         src: ../k8s/namespace.yaml
 
-    - name: Apply Service
+    - name: 📦 Apply Service
       kubernetes.core.k8s:
         state: present
         src: ../k8s/service.yaml
 
-    - name: Apply Deployment manifest
+    - name: 🚀 Apply Deployment manifest
       kubernetes.core.k8s:
         state: present
         src: ../k8s/deployment.yaml
 
-    - name: Force image update to freshly built tag
+    - name: 🔄 Force image update to freshly built tag
       ansible.builtin.command:
         cmd: kubectl -n {{ kube_ns }} set image deploy/vehicle-app vehicle-app={{ deploy_image }}
+      register: image_update
+      changed_when: "'image updated' in image_update.stdout or image_update.rc == 0"
 
-    - name: Wait for rollout to complete
+    - name: 🕒 Wait for rollout to complete (with retries)
       ansible.builtin.command:
-        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout=180s
+        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout={{ rollout_timeout }}
+      register: rollout_result
+      retries: 3
+      delay: 30
+      until: rollout_result.rc == 0
+
+    - name: ✅ Verify deployment success
+      ansible.builtin.command:
+        cmd: kubectl -n {{ kube_ns }} get deploy vehicle-app -o wide
+      register: deploy_status
+      changed_when: false
+
+    - name: 🟢 Show pod status summary
+      ansible.builtin.command:
+        cmd: kubectl -n {{ kube_ns }} get pods -o wide
+      changed_when: false
