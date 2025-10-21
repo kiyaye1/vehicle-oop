@@ -5,7 +5,7 @@
     kube_ns: vehicle
     aws_region: "{{ lookup('env','AWS_REGION') }}"
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') }}"
-    rollout_timeout: "{{ rollout_timeout | default('600s') }}"  # default 10 min timeout
+    rollout_timeout: "{{ rollout_timeout | default('600') }}"  # numeric seconds only
 
   tasks:
 
@@ -37,19 +37,39 @@
 
     - name: 🕒 Wait for rollout to complete (with retries)
       ansible.builtin.command:
-        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout={{ rollout_timeout }}
+        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout={{ rollout_timeout }}s
       register: rollout_result
       retries: 3
       delay: 30
       until: rollout_result.rc == 0
+      ignore_errors: true  # continue even if rollout fails (so we can dump logs)
+
+    - name: ❌ Dump pod logs and describe on failure
+      when: rollout_result.rc != 0
+      block:
+        - name: ⚠️ Show pod events
+          ansible.builtin.command:
+            cmd: kubectl -n {{ kube_ns }} describe pods
+          ignore_errors: true
+
+        - name: ⚠️ Show container logs
+          ansible.builtin.command:
+            cmd: kubectl -n {{ kube_ns }} logs -l app=vehicle-app --tail=100
+          ignore_errors: true
+
+        - name: 🚨 Fail task explicitly
+          ansible.builtin.fail:
+            msg: "Rollout failed — check above pod logs for cause."
 
     - name: ✅ Verify deployment success
+      when: rollout_result.rc == 0
       ansible.builtin.command:
         cmd: kubectl -n {{ kube_ns }} get deploy vehicle-app -o wide
       register: deploy_status
       changed_when: false
 
     - name: 🟢 Show pod status summary
+      when: rollout_result.rc == 0
       ansible.builtin.command:
         cmd: kubectl -n {{ kube_ns }} get pods -o wide
       changed_when: false
