@@ -16,6 +16,7 @@ pipeline {
   options { timestamps() }
 
   stages {
+
     stage('Checkout') {
       steps {
         checkout scm
@@ -41,11 +42,18 @@ pipeline {
           env.IMAGE_SHA    = "docker.io/${DOCKER_REPO}:${IMAGE_TAG}"
           env.IMAGE_LATEST = "docker.io/${DOCKER_REPO}:latest"
         }
-        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-        sh 'docker build -t "$IMAGE_SHA" .'
-        sh 'docker push "$IMAGE_SHA"'
-        sh 'docker tag "$IMAGE_SHA" "$IMAGE_LATEST"'
-        sh 'docker push "$IMAGE_LATEST"'
+
+        sh '''
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+          docker build -t "$IMAGE_SHA" .
+          docker push "$IMAGE_SHA"
+          docker tag "$IMAGE_SHA" "$IMAGE_LATEST"
+          docker push "$IMAGE_LATEST"
+
+          echo "⏳ Waiting for Docker Hub image to propagate..."
+          sleep 20
+          docker pull "$IMAGE_LATEST"
+        '''
       }
     }
 
@@ -71,6 +79,7 @@ pipeline {
         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
           withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
+
             dir('deploy/ansible') {
               sh '''
                 chmod +x deploy.sh
@@ -81,11 +90,26 @@ pipeline {
         }
       }
     }
+
+    stage('Post-Deploy Health Check') {
+      steps {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+            sh """
+              aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}
+              echo '🔍 Checking rollout status...'
+              kubectl -n vehicle rollout status deploy/vehicle-app --timeout=600s
+              echo '✅ Deployment healthy!'
+            """
+          }
+        }
+      }
+    }
   }
 
   post {
     success {
-      echo "Deployment successful!"
+      echo "🎉 Deployment successful!"
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
         withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
           sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
@@ -94,7 +118,7 @@ pipeline {
       }
     }
     failure {
-      echo "Pipeline failed."
+      echo "❌ Pipeline failed. Check rollout logs above."
     }
   }
 }
