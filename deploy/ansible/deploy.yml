@@ -42,5 +42,10 @@
         state: present
         src: "{{ playbook_dir }}/../k8s/deployment.yaml"
 
+    - name: Apply HPA
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ playbook_dir }}/../k8s/hpa.yaml"
+
     - name: Wait for rollout
       shell: kubectl -n {{ ns }} rollout status deploy/{{ app_name }} --timeout=300s
