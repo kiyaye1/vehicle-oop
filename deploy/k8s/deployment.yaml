@@ -3,22 +3,14 @@ kind: Deployment
 metadata:
   name: vehicle-app
   namespace: vehicle
-  labels:
-    app: vehicle-app
+  labels: { app: vehicle-app }
 spec:
-  replicas: 1   # <-- temporarily 1 for easier debugging
+  replicas: 1
   selector:
-    matchLabels:
-      app: vehicle-app
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+    matchLabels: { app: vehicle-app }
   template:
     metadata:
-      labels:
-        app: vehicle-app
+      labels: { app: vehicle-app }
     spec:
       imagePullSecrets:
         - name: dockerhub-creds
@@ -31,26 +23,26 @@ spec:
           env:
             - name: SERVER_PORT
               value: "8282"
-            # if you used test profile earlier, force default:
-            # - name: SPRING_PROFILES_ACTIVE
-            #   value: "default"
-          # Give the app time to start before readiness kicks in
+          # probes (keep the ones you added)
           startupProbe:
             httpGet: { path: /actuator/health, port: 8282 }
             periodSeconds: 5
-            failureThreshold: 30   # ~150s to boot
+            failureThreshold: 30
           readinessProbe:
             httpGet: { path: /actuator/health, port: 8282 }
             initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 24   # another ~120s window
+            failureThreshold: 24
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8282 }
             initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
-          resources:
-            requests: { cpu: 100m, memory: 256Mi }
-            limits:   { cpu: 500m, memory: 512Mi }
+          volumeMounts:
+            - name: h2data
+              mountPath: /app/data
+      volumes:
+        - name: h2data
+          emptyDir: {}
