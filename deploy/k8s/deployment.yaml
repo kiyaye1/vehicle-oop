@@ -23,14 +23,13 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
-
           env:
             - name: SERVER_PORT
               value: "8282"
 
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /actuator/health
               port: 8282
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -40,7 +39,7 @@ spec:
 
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /actuator/health
               port: 8282
             initialDelaySeconds: 60
             periodSeconds: 15
