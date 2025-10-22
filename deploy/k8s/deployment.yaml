@@ -23,6 +23,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
+
           env:
             # Application port
             - name: SERVER_PORT
@@ -49,14 +50,28 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/readiness
               port: 8282
-            initialDelaySeconds: 20
-            periodSeconds: 5
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+            successThreshold: 1
 
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: 8282
             initialDelaySeconds: 60
-            periodSeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
