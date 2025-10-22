@@ -1,5 +1,5 @@
 ---
-- name: local
+- name: Deploy to EKS
   hosts: localhost
   connection: local
   gather_facts: false
@@ -8,28 +8,23 @@
     ns: vehicle
     app_name: vehicle-app
     image_latest: "{{ deploy_image | default('docker.io/kiyaye1/vehicle-oop:latest') }}"
-    docker_user: "{{ lookup('env', 'DOCKER_USER') }}"
-    docker_pass: "{{ lookup('env', 'DOCKER_PASS') }}"
+    docker_user: "{{ lookup('env','DOCKER_USER') }}"
+    docker_pass: "{{ lookup('env','DOCKER_PASS') }}"
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}"
     aws_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}"
 
   tasks:
-    - name: Ensure kubeconfig for EKS is set
-      ansible.builtin.command:
-        cmd: >
-          aws eks update-kubeconfig
-          --name {{ eks_cluster }}
-          --region {{ aws_region }}
+    - name: Configure kubeconfig for EKS
+      command: aws eks update-kubeconfig --name {{ eks_cluster }} --region {{ aws_region }}
       changed_when: true
 
-    - name: Ensure namespace exists
+    - name: Create namespace
       kubernetes.core.k8s:
         state: present
         src: "{{ playbook_dir }}/../k8s/namespace.yaml"
 
-    - name: (Re)create Docker Hub pull secret
-      ansible.builtin.shell: |
-        set -e
+    - name: Ensure Docker Hub pull secret
+      shell: |
         kubectl -n {{ ns }} delete secret dockerhub-creds --ignore-not-found
         kubectl -n {{ ns }} create secret docker-registry dockerhub-creds \
           --docker-username='{{ docker_user }}' \
@@ -46,48 +41,6 @@
       kubernetes.core.k8s:
         state: present
         src: "{{ playbook_dir }}/../k8s/deployment.yaml"
-      notify: set-image
 
-    - name: ⏳ Wait for rollout to complete (5m)
-      ansible.builtin.shell: |
-        set -e
-        kubectl -n {{ ns }} rollout status deploy/{{ app_name }} --timeout=300s
-      register: rollout
-      failed_when: rollout.rc != 0
-      ignore_errors: yes
-
-    - name: 🔎 Diagnostics if rollout failed (collect)
-      when: rollout.rc != 0
-      ansible.builtin.shell: |
-        set +e
-        echo "---- DEPLOY ----"
-        kubectl -n {{ ns }} get deploy {{ app_name }} -o yaml | sed -n '1,160p'
-        echo "---- REPLICASETS ----"
-        kubectl -n {{ ns }} get rs -l app={{ app_name }} -o wide
-        echo "---- PODS ----"
-        kubectl -n {{ ns }} get pods -l app={{ app_name }} -o wide
-        echo "---- DESCRIBE PODS ----"
-        kubectl -n {{ ns }} describe pods -l app={{ app_name }}
-        echo "---- LOGS (tail) ----"
-        kubectl -n {{ ns }} logs -l app={{ app_name }} --tail=200 --all-containers=true
-        echo "---- RECENT EVENTS ----"
-        kubectl -n {{ ns }} get events --sort-by=.lastTimestamp | tail -n 50
-      register: diag
-      changed_when: false
-
-    - name: 📜 Show diagnostics output
-      when: rollout.rc != 0
-      ansible.builtin.debug:
-        msg: "{{ diag.stdout }}"
-
-    - name: ❌ Fail if rollout failed
-      when: rollout.rc != 0
-      ansible.builtin.fail:
-        msg: "Rollout failed; see diagnostics above."
-
-  handlers:
-    - name: set-image
-      ansible.builtin.shell: |
-        set -e
-        kubectl -n {{ ns }} set image deploy/{{ app_name }} vehicle={{ image_latest }}
-      changed_when: true
+    - name: Wait for rollout
+      shell: kubectl -n {{ ns }} rollout status deploy/{{ app_name }} --timeout=300s
