@@ -8,17 +8,18 @@
     ns: vehicle
     app_name: vehicle-app
     image_latest: "{{ deploy_image | default('docker.io/kiyaye1/vehicle-oop:latest') }}"
-    # Jenkins injects these; for local runs you can export in env
     docker_user: "{{ lookup('env', 'DOCKER_USER') }}"
     docker_pass: "{{ lookup('env', 'DOCKER_PASS') }}"
+    eks_cluster: "{{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}"
+    aws_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}"
 
   tasks:
     - name: Ensure kubeconfig for EKS is set
       ansible.builtin.command:
         cmd: >
           aws eks update-kubeconfig
-          --name {{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}
-          --region {{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}
+          --name {{ eks_cluster }}
+          --region {{ aws_region }}
       changed_when: true
 
     - name: Ensure namespace exists
@@ -41,14 +42,10 @@
         state: present
         src: k8s/service.yaml
 
-    - name: Apply Deployment (image override)
+    - name: Apply Deployment
       kubernetes.core.k8s:
         state: present
         src: k8s/deployment.yaml
-        definition: null
-      vars:
-        # Let kubectl set the image to latest tag built by Jenkins
-        k8s_resource_name: "deploy/{{ app_name }}"
       notify: set-image
 
     - name: ⏳ Wait for rollout to complete (5m)
@@ -73,7 +70,7 @@
         echo "---- LOGS (tail) ----"
         kubectl -n {{ ns }} logs -l app={{ app_name }} --tail=200 --all-containers=true
       register: diag
-      changed: false
+      changed_when: false
 
     - name: ❌ Fail if rollout failed
       when: rollout.rc != 0
