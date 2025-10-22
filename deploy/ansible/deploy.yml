@@ -1,37 +1,88 @@
-- hosts: local
+---
+- name: local
+  hosts: localhost
+  connection: local
   gather_facts: false
 
   vars:
-    kube_ns: vehicle
-    aws_region: "{{ lookup('env','AWS_REGION') }}"
-    eks_cluster: "{{ lookup('env','EKS_CLUSTER') }}"
+    ns: vehicle
+    app_name: vehicle-app
+    image_latest: "{{ deploy_image | default('docker.io/kiyaye1/vehicle-oop:latest') }}"
+    # Jenkins injects these; for local runs you can export in env
+    docker_user: "{{ lookup('env', 'DOCKER_USER') }}"
+    docker_pass: "{{ lookup('env', 'DOCKER_PASS') }}"
 
   tasks:
-
-    - name: 🧭 Configure kubeconfig for EKS
+    - name: Ensure kubeconfig for EKS is set
       ansible.builtin.command:
-        cmd: aws eks update-kubeconfig --name {{ eks_cluster }} --region {{ aws_region }}
-      changed_when: false
+        cmd: >
+          aws eks update-kubeconfig
+          --name {{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}
+          --region {{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}
+      changed_when: true
 
-    - name: 🧩 Ensure namespace exists
+    - name: Ensure namespace exists
       kubernetes.core.k8s:
         state: present
-        src: ../k8s/namespace.yaml
+        src: k8s/namespace.yaml
 
-    - name: 📦 Apply Service
+    - name: (Re)create Docker Hub pull secret
+      ansible.builtin.shell: |
+        set -e
+        kubectl -n {{ ns }} delete secret dockerhub-creds --ignore-not-found
+        kubectl -n {{ ns }} create secret docker-registry dockerhub-creds \
+          --docker-username='{{ docker_user }}' \
+          --docker-password='{{ docker_pass }}' \
+          --docker-email='none@example.com'
+      changed_when: true
+
+    - name: Apply Service
       kubernetes.core.k8s:
         state: present
-        src: ../k8s/service.yaml
+        src: k8s/service.yaml
 
-    - name: 🚀 Apply Deployment manifest
+    - name: Apply Deployment (image override)
       kubernetes.core.k8s:
         state: present
-        src: ../k8s/deployment.yaml
+        src: k8s/deployment.yaml
+        definition: null
+      vars:
+        # Let kubectl set the image to latest tag built by Jenkins
+        k8s_resource_name: "deploy/{{ app_name }}"
+      notify: set-image
 
-    - name: 🔄 Force image update to freshly built tag
-      ansible.builtin.command:
-        cmd: kubectl -n {{ kube_ns }} set image deploy/vehicle-app vehicle-app={{ deploy_image }}
+    - name: ⏳ Wait for rollout to complete (5m)
+      ansible.builtin.shell: |
+        set -e
+        kubectl -n {{ ns }} rollout status deploy/{{ app_name }} --timeout=300s
+      register: rollout
+      failed_when: rollout.rc != 0
+      ignore_errors: yes
 
-    - name: ⏳ Wait for rollout to complete
-      ansible.builtin.command:
-        cmd: kubectl -n {{ kube_ns }} rollout status deploy/vehicle-app --timeout=180s
+    - name: 🔎 Diagnostics if rollout failed
+      when: rollout.rc != 0
+      ansible.builtin.shell: |
+        echo "---- DEPLOY ----"
+        kubectl -n {{ ns }} get deploy {{ app_name }} -o yaml | sed -n '1,120p'
+        echo "---- REPLICASETS ----"
+        kubectl -n {{ ns }} get rs -l app={{ app_name }} -o wide
+        echo "---- PODS ----"
+        kubectl -n {{ ns }} get pods -l app={{ app_name }} -o wide
+        echo "---- DESCRIBE PODS ----"
+        kubectl -n {{ ns }} describe pods -l app={{ app_name }}
+        echo "---- LOGS (tail) ----"
+        kubectl -n {{ ns }} logs -l app={{ app_name }} --tail=200 --all-containers=true
+      register: diag
+      changed: false
+
+    - name: ❌ Fail if rollout failed
+      when: rollout.rc != 0
+      ansible.builtin.fail:
+        msg: "Rollout failed; see diagnostics above."
+
+  handlers:
+    - name: set-image
+      ansible.builtin.shell: |
+        set -e
+        kubectl -n {{ ns }} set image deploy/{{ app_name }} vehicle={{ image_latest }}
+      changed_when: true
