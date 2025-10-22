@@ -6,7 +6,7 @@ metadata:
   labels:
     app: vehicle-app
 spec:
-  replicas: 2
+  replicas: 1   # <-- temporarily 1 for easier debugging
   selector:
     matchLabels:
       app: vehicle-app
@@ -31,26 +31,26 @@ spec:
           env:
             - name: SERVER_PORT
               value: "8282"
+            # if you used test profile earlier, force default:
+            # - name: SPRING_PROFILES_ACTIVE
+            #   value: "default"
+          # Give the app time to start before readiness kicks in
+          startupProbe:
+            httpGet: { path: /actuator/health, port: 8282 }
+            periodSeconds: 5
+            failureThreshold: 30   # ~150s to boot
           readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8282
-            initialDelaySeconds: 15
+            httpGet: { path: /actuator/health, port: 8282 }
+            initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 12
+            failureThreshold: 24   # another ~120s window
           livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8282
-            initialDelaySeconds: 30
+            httpGet: { path: /actuator/health, port: 8282 }
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
           resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
