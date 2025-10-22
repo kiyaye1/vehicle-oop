@@ -9,8 +9,8 @@ RUN mvn -q -B -DskipTests package
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-
+# make sure H2 file db path exists
+RUN mkdir -p /app/data
 COPY --from=build /app/target/*SNAPSHOT*.jar app.jar
-
 EXPOSE 8282
 ENTRYPOINT ["java","-jar","/app/app.jar"]
