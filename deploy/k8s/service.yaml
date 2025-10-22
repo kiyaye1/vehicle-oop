@@ -3,11 +3,9 @@ kind: Service
 metadata:
   name: vehicle-svc
   namespace: vehicle
-  labels:
-    app: vehicle-app
+  labels: { app: vehicle-app }
 spec:
-  selector:
-    app: vehicle-app
+  selector: { app: vehicle-app }
   ports:
     - name: http
       port: 8282
