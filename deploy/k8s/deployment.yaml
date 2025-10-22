@@ -3,19 +3,28 @@ kind: Deployment
 metadata:
   name: vehicle-app
   namespace: vehicle
+  labels:
+    app: vehicle-app
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: vehicle-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
         app: vehicle-app
     spec:
+      imagePullSecrets:
+        - name: dockerhub-creds
       containers:
-        - name: vehicle-app
-          image: "{{ deploy_image }}"
+        - name: vehicle
+          image: docker.io/kiyaye1/vehicle-oop:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
@@ -26,11 +35,22 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8282
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8282
-            initialDelaySeconds: 40
-            periodSeconds: 20
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
