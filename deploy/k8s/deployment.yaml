@@ -23,23 +23,14 @@ spec:
           env:
             - name: SERVER_PORT
               value: "8282"
-          # probes (keep the ones you added)
-          startupProbe:
-            httpGet: { path: /actuator/health, port: 8282 }
-            periodSeconds: 5
-            failureThreshold: 30
           readinessProbe:
             httpGet: { path: /actuator/health, port: 8282 }
             initialDelaySeconds: 20
             periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 24
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8282 }
             initialDelaySeconds: 60
             periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 6
           volumeMounts:
             - name: h2data
               mountPath: /app/data
