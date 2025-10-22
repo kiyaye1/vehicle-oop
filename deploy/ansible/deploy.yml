@@ -25,7 +25,7 @@
     - name: Ensure namespace exists
       kubernetes.core.k8s:
         state: present
-        src: k8s/namespace.yaml
+        src: "{{ playbook_dir }}/../k8s/namespace.yaml"
 
     - name: (Re)create Docker Hub pull secret
       ansible.builtin.shell: |
@@ -40,12 +40,12 @@
     - name: Apply Service
       kubernetes.core.k8s:
         state: present
-        src: k8s/service.yaml
+        src: "{{ playbook_dir }}/../k8s/service.yaml"
 
     - name: Apply Deployment
       kubernetes.core.k8s:
         state: present
-        src: k8s/deployment.yaml
+        src: "{{ playbook_dir }}/../k8s/deployment.yaml"
       notify: set-image
 
     - name: ⏳ Wait for rollout to complete (5m)
