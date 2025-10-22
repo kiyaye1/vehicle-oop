@@ -3,11 +3,13 @@ kind: Service
 metadata:
   name: vehicle-svc
   namespace: vehicle
+  labels:
+    app: vehicle-app
 spec:
-  type: LoadBalancer
   selector:
     app: vehicle-app
   ports:
     - name: http
-      port: 80
+      port: 8282
       targetPort: 8282
+  type: LoadBalancer
