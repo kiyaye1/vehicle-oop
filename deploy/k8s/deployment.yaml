@@ -30,7 +30,7 @@ spec:
 
             # Oracle DB connection settings
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:oracle:thin:@//10.0.1.119:1521/XEPDB1"
+              value: "jdbc:oracle:thin:@//172.31.18.119:1521/XEPDB1"
 
             - name: SPRING_DATASOURCE_USERNAME
               value: "system"
