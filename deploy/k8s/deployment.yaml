@@ -23,6 +23,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
+          envFrom:
+            - secretRef:
+                name: db-secret
           env:
             - name: SERVER_PORT
               value: "8282"
