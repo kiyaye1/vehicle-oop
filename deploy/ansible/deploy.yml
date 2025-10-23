@@ -12,11 +12,31 @@
     docker_pass: "{{ lookup('env','DOCKER_PASS') }}"
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}"
     aws_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}"
+    db_host: "{{ lookup('env','DB_HOST') }}"
+    db_user: "{{ lookup('env','DB_USER') | default('system') }}"
+    db_pass: "{{ lookup('env','DB_PASSWORD') | default('Eyotekonjo12') }}"
+    db_url: "jdbc:oracle:thin:@//{{ db_host }}:1521/XEPDB1"
 
   tasks:
     - name: Configure kubeconfig for EKS
       command: aws eks update-kubeconfig --name {{ eks_cluster }} --region {{ aws_region }}
       changed_when: true
+
+    - name: Create/Update DB secret (stringData)
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: db-secret
+            namespace: "{{ ns }}"
+          type: Opaque
+          stringData:
+            SPRING_DATASOURCE_URL: "{{ db_url }}"
+            SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
+            SPRING_DATASOURCE_PASSWORD: "{{ db_pass }}"
+            SPRING_DATASOURCE_DRIVER_CLASS_NAME: "oracle.jdbc.OracleDriver"
 
     - name: Create namespace
       kubernetes.core.k8s:
