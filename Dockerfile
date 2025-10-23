@@ -10,7 +10,6 @@ WORKDIR /app
 RUN mkdir -p /app/data
 COPY --from=build /app/target/*SNAPSHOT*.jar app.jar
 
-# ✅ Ensure the Oracle driver env var is visible to Spring Boot
 ENV SPRING_DATASOURCE_DRIVER_CLASS_NAME=oracle.jdbc.OracleDriver
 
 EXPOSE 8282
