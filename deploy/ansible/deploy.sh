@@ -5,8 +5,9 @@ IMAGE_LATEST="${1:-docker.io/kiyaye1/vehicle-oop:latest}"
 echo "Starting Ansible deployment using image: $IMAGE_LATEST"
 
 PY_BIN="${PY_BIN:-python3}"
-echo "Using $( $PY_BIN -V )"
+echo "Using $($PY_BIN -V)"
 
+# venv
 if [ ! -d ".venv" ]; then
   echo "Creating virtual environment..."
   if ! $PY_BIN -m venv .venv 2>/dev/null; then
@@ -20,6 +21,7 @@ fi
 
 . .venv/bin/activate
 
+# pip may not be present on some images; bootstrap if needed
 if ! command -v pip >/dev/null 2>&1; then
   echo "Bootstrapping pip in venv..."
   curl -fsSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
