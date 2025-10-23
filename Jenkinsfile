@@ -71,7 +71,7 @@ pipeline {
 
   post {
     success {
-      echo '✅ Done'
+      echo 'Done'
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
         withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
           sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION} || true"
@@ -79,6 +79,6 @@ pipeline {
         }
       }
     }
-    failure { echo '❌ Failed' }
+    failure { echo 'Failed' }
   }
 }
