@@ -6,7 +6,9 @@ pipeline {
     EKS_CLUSTER = 'vehicle-eks'
     DOCKER_USER = credentials('dockerhub-user')
     DOCKER_PASS = credentials('dockerhub-pass')
-    DOCKER_REPO = 'kiyaye1/vehicle-oop'
+    AWS_CREDS   = credentials('aws-creds')
+    DB_HOST     = credentials('db-host')
+    DB_PASS     = credentials('db-password')
   }
 
   options { timestamps() }
@@ -58,7 +60,12 @@ pipeline {
     stage('Deploy (Ansible)') {
       steps {
         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-          withEnv(["AWS_DEFAULT_REGION=${AWS_REGION}"]) {
+          withEnv([
+            "AWS_DEFAULT_REGION=${AWS_REGION}",
+            "DB_HOST=${DB_HOST}",
+            "DB_PASSWORD=${DB_PASSWORD}",
+            "DB_USER=${DB_USER}"
+          ]) {
             sh "aws eks update-kubeconfig --name ${EKS_CLUSTER} --region ${AWS_REGION}"
             dir('deploy/ansible') {
               sh 'chmod +x deploy.sh && ./deploy.sh "$IMAGE_LATEST"'
