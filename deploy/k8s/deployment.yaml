@@ -23,6 +23,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
+          # Pull DB connection props from the secret the playbook creates
           envFrom:
             - secretRef:
                 name: db-secret
