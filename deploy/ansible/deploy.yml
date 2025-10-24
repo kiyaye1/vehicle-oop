@@ -7,16 +7,18 @@
   vars:
     ns: vehicle
     app_name: vehicle-app
-    # Passed in from deploy.sh: -e deploy_image="docker.io/kiyaye1/vehicle-oop:latest" or specific sha/tag
+
+    # Jenkins passes -e deploy_image="docker.io/kiyaye1/vehicle-oop:<tag>"
     image_latest: "{{ deploy_image | default('docker.io/kiyaye1/vehicle-oop:latest') }}"
 
-    # Prefer DH_USER/DH_PASS (set by Jenkins Deploy stage); fall back if someone runs manually
+    # Prefer DH_USER/DH_PASS set by Jenkins Deploy stage; fall back for manual runs
     docker_user: "{{ lookup('env','DH_USER') | default(lookup('env','DOCKER_USER'), true) | default('', true) }}"
-    docker_pass: "{{ lookup('env','DH_PASS')  | default(lookup('env','DOCKER_PASS'), true) | default('', true) }}"
+    docker_pass: "{{ lookup('env','DH_PASS') | default(lookup('env','DOCKER_PASS'), true) | default('', true) }}"
 
     eks_cluster: "{{ lookup('env','EKS_CLUSTER') | default('vehicle-eks') }}"
     aws_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-2') }}"
 
+    # Jenkins sets DB_HOST via credential "db-host"
     db_host: "{{ lookup('env','DB_HOST') | default('', true) }}"
     db_user: "{{ lookup('env','DB_USER') | default('system') }}"
     db_pass: "{{ lookup('env','DB_PASSWORD') | default('Eyotekonjo12') }}"
