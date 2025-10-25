@@ -1,10 +1,13 @@
 pipeline {
   agent any
   environment {
-    DOCKER_IMAGE = "kiyaye1/vehicle-oop"
-    K8S_NAMESPACE = "vehicle"
-    KUBECONFIG = "${env.WORKSPACE}/.kube/config"
+  	DOCKER_IMAGE = "kiyaye1/vehicle-oop"
+  	K8S_NAMESPACE = "vehicle"
+  	KUBECONFIG = "${env.WORKSPACE}/.kube/config"
+  	DOCKER_HOST = "unix:///var/run/docker.sock"
+  	TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE = "/var/run/docker.sock"
   }
+
   triggers { pollSCM('H/1 * * * *') }
   options { timestamps() }
 
