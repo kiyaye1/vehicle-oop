@@ -1,12 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: oracle-xe
+  namespace: vehicle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oracle-xe
+  template:
+    metadata:
+      labels:
+        app: oracle-xe
+    spec:
+      containers:
+        - name: oracle-xe
+          image: gvenzl/oracle-xe:21-slim
+          ports:
+            - containerPort: 1521
+            - containerPort: 5500
+          env:
+            - name: ORACLE_PASSWORD
+              value: "Eyotekonjo12"
+            - name: APP_USER
+              value: "appuser"
+            - name: APP_USER_PASSWORD
+              value: "Eyotekonjo12"
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits:   { cpu: "1",    memory: "2Gi" }
+          volumeMounts:
+            - name: oradata
+              mountPath: /opt/oracle/oradata
+      volumes:
+        - name: oradata
+          emptyDir: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: vehicle-app
   namespace: vehicle
-  labels:
-    app: vehicle-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: vehicle-app
@@ -15,46 +52,25 @@ spec:
       labels:
         app: vehicle-app
     spec:
-      imagePullSecrets:
-        - name: dockerhub-creds
       containers:
-        - name: vehicle
-          image: docker.io/kiyaye1/vehicle-oop:latest
+        - name: vehicle-app
+          image: kiyaye1/vehicle-oop:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8282
-          # Pull DB connection props from the secret the playbook creates
-          envFrom:
-            - secretRef:
-                name: db-secret
           env:
-            - name: SERVER_PORT
-              value: "8282"
-
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8282
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 6
-            successThreshold: 1
-
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8282
-            initialDelaySeconds: 60
-            periodSeconds: 15
-            timeoutSeconds: 5
-            failureThreshold: 5
-            successThreshold: 1
-
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: vehicle-db-secret
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: vehicle-db-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vehicle-db-secret
+                  key: SPRING_DATASOURCE_PASSWORD

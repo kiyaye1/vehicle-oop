@@ -1,0 +1,14 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: cicd
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # App: NodePort 30282 -> host:8282
+      - containerPort: 30282
+        hostPort: 8282
+        protocol: TCP
+      # Oracle XE: NodePort 31521 -> host:31521  (changed from 1521)
+      - containerPort: 31521
+        hostPort: 31521
+        protocol: TCP
