@@ -19,6 +19,7 @@ public abstract class Vehicle {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 	private String name;
+	@Column(name = "KIND")
 	private String type;
 	private String model;
 	private double price;
