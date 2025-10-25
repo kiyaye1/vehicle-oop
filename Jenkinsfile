@@ -26,9 +26,20 @@ pipeline {
     stage('Prep kubeconfig') {
       steps {
         sh '''
-          mkdir -p .kube
+          set -eux
+      	  mkdir -p .kube
           cp -f /var/jenkins_home/.kube/config .kube/config
-          kubectl config current-context || true
+
+          # Show the original server
+          echo "Before patch:" 
+          kubectl --kubeconfig .kube/config config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
+
+          # Replace 127.0.0.1 with host.docker.internal so kubectl reaches kind from inside the container
+          sed -i 's/127\\.0\\.0\\.1/host.docker.internal/g' .kube/config || true
+
+          # Show the patched server
+          echo "After patch:"
+          kubectl --kubeconfig .kube/config config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
         '''
       }
     }
@@ -74,13 +85,15 @@ pipeline {
     stage('Deploy to kind (K8s)') {
       steps {
         sh '''
-          kubectl apply -f deploy/k8s/namespace.yaml
-          kubectl apply -f deploy/k8s/secret.yaml
-          kubectl apply -f deploy/k8s/deployment.yaml
-          kubectl apply -f deploy/k8s/service.yaml
+          set -eux
+          # use the patched kubeconfig explicitly and relax validation in case the API is slow to serve OpenAPI
+          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/namespace.yaml
+          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/secret.yaml
+          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/deployment.yaml
+          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/service.yaml
 
-          kubectl -n ${K8S_NAMESPACE} set image deploy/vehicle-app vehicle-app=$DOCKER_IMAGE:latest --record
-          kubectl -n ${K8S_NAMESPACE} rollout status deploy/vehicle-app --timeout=180s
+          kubectl --kubeconfig .kube/config -n vehicle set image deploy/vehicle-app vehicle-app=$DOCKER_IMAGE:latest --record
+          kubectl --kubeconfig .kube/config -n vehicle rollout status deploy/vehicle-app --timeout=180s
         '''
       }
     }
