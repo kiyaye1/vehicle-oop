@@ -1,5 +1,6 @@
 package com.synex.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,10 +19,13 @@ public abstract class Vehicle {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+	@Column(name = "NAME")
 	private String name;
 	@Column(name = "KIND")
 	private String type;
+	@Column(name = "MODEL")
 	private String model;
+	@Column(name = "PRICE")
 	private double price;
 	
 	protected Vehicle() {
