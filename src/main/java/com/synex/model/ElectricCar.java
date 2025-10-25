@@ -13,8 +13,8 @@ public class ElectricCar extends Vehicle {
 		
 	}
 
-	public ElectricCar(String name, String type ,String model, double price, int batteryLevel) {
-		super(name, type, model, price);
+	public ElectricCar(String name, String kind, String model, double price, int batteryLevel) {
+		super(name, kind, model, price);
 		this.batteryLevel = batteryLevel;
 	}
 	

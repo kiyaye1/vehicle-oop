@@ -11,8 +11,8 @@ public class Car extends Vehicle {
 		
 	}
 
-	public Car(String name, String type, String model, double price) {
-		super(name, type, model, price);
+	public Car(String name, String kind, String model, double price) {
+		super(name, kind, model, price);
 	}
 
 	@Override

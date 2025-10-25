@@ -22,7 +22,7 @@ public abstract class Vehicle {
 	@Column(name = "NAME")
 	private String name;
 	@Column(name = "KIND")
-	private String type;
+	private String kind;
 	@Column(name = "MODEL")
 	private String model;
 	@Column(name = "PRICE")
@@ -32,9 +32,9 @@ public abstract class Vehicle {
 		
 	}
 	
-	public Vehicle(String name, String type, String model, double price) {
+	public Vehicle(String name, String kind, String model, double price) {
 		this.name = name;
-		this.type = type;
+		this.type = kind;
 		this.model = model;
 		this.price = price;
 	}
@@ -43,8 +43,8 @@ public abstract class Vehicle {
 		return name;
 	}
 
-	public String getType() {
-		return type;
+	public String getKind() {
+		return kind;
 	}
 
 	public String getModel() {
@@ -58,7 +58,7 @@ public abstract class Vehicle {
 	public void displayInfo() {
 		System.out.println("Vehicle: \nName: " + name + 
         		"\nModel:" + model + 
-        		"\nType: " + type + 
+        		"\nKind: " + kind + 
         		"\nPrice: $" + price);
 	}
 	
