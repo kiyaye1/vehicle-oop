@@ -1,0 +1,27 @@
+2025-10-25T14:31:57.851-04:00  INFO 6703 --- [vehicle-oop] [main] com.synex.it.OracleIntegrationTest       : Starting OracleIntegrationTest using Java 21.0.8 with PID 6703 (started by kiyaye1 in /home/kiyaye1/cicd-local-vehicle/vehicle-oop)
+2025-10-25T14:31:57.853-04:00  INFO 6703 --- [vehicle-oop] [main] com.synex.it.OracleIntegrationTest       : The following 1 profile is active: "test"
+2025-10-25T14:31:59.161-04:00  INFO 6703 --- [vehicle-oop] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-25T14:31:59.251-04:00  INFO 6703 --- [vehicle-oop] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 70 ms. Found 1 JPA repository interface.
+2025-10-25T14:31:59.945-04:00  INFO 6703 --- [vehicle-oop] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-25T14:32:00.962-04:00  INFO 6703 --- [vehicle-oop] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@36511772
+2025-10-25T14:32:00.969-04:00  INFO 6703 --- [vehicle-oop] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-25T14:32:01.306-04:00  INFO 6703 --- [vehicle-oop] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-25T14:32:01.412-04:00  INFO 6703 --- [vehicle-oop] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-25T14:32:01.473-04:00  INFO 6703 --- [vehicle-oop] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-25T14:32:01.868-04:00  INFO 6703 --- [vehicle-oop] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-25T14:32:02.534-04:00  INFO 6703 --- [vehicle-oop] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 21.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-25T14:32:04.679-04:00  INFO 6703 --- [vehicle-oop] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-25T14:32:06.008-04:00  INFO 6703 --- [vehicle-oop] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-25T14:32:06.362-04:00  WARN 6703 --- [vehicle-oop] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-25T14:32:07.052-04:00  INFO 6703 --- [vehicle-oop] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2025-10-25T14:32:07.136-04:00  INFO 6703 --- [vehicle-oop] [main] com.synex.it.OracleIntegrationTest       : Started OracleIntegrationTest in 9.924 seconds (process running for 87.361)
+2025-10-25T14:32:08.963-04:00  INFO 6703 --- [vehicle-oop] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-25T14:32:08.967-04:00  INFO 6703 --- [vehicle-oop] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-10-25T14:32:09.011-04:00  INFO 6703 --- [vehicle-oop] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
