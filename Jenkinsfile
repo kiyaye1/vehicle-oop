@@ -85,15 +85,20 @@ pipeline {
     stage('Deploy to kind (K8s)') {
       steps {
         sh '''
-          set -eux
-          # use the patched kubeconfig explicitly and relax validation in case the API is slow to serve OpenAPI
-          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/namespace.yaml
-          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/secret.yaml
-          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/deployment.yaml
-          kubectl --kubeconfig .kube/config apply --validate=false -f deploy/k8s/service.yaml
+           set -eux
+           # Use patched kubeconfig + relax validation and TLS hostname verification
+           K="--kubeconfig .kube/config --validate=false --insecure-skip-tls-verify=true"
 
-          kubectl --kubeconfig .kube/config -n vehicle set image deploy/vehicle-app vehicle-app=$DOCKER_IMAGE:latest --record
-          kubectl --kubeconfig .kube/config -n vehicle rollout status deploy/vehicle-app --timeout=180s
+           kubectl $K apply -f deploy/k8s/namespace.yaml
+           kubectl $K apply -f deploy/k8s/secret.yaml
+           kubectl $K apply -f deploy/k8s/deployment.yaml
+           kubectl $K apply -f deploy/k8s/service.yaml
+
+           kubectl --kubeconfig .kube/config --insecure-skip-tls-verify=true \
+        -n vehicle set image deploy/vehicle-app vehicle-app=$DOCKER_IMAGE:latest --record
+
+           kubectl --kubeconfig .kube/config --insecure-skip-tls-verify=true \
+        -n vehicle rollout status deploy/vehicle-app --timeout=180s
         '''
       }
     }
