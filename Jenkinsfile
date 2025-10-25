@@ -2,10 +2,21 @@ pipeline {
   agent any
   environment {
   	DOCKER_IMAGE = "kiyaye1/vehicle-oop"
-  	K8S_NAMESPACE = "vehicle"
-  	KUBECONFIG = "${env.WORKSPACE}/.kube/config"
-  	DOCKER_HOST = "unix:///var/run/docker.sock"
+        K8S_NAMESPACE = "vehicle"
+        KUBECONFIG = "${env.WORKSPACE}/.kube/config"
+
+        DOCKER_HOST = "unix:///var/run/docker.sock"
   	TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE = "/var/run/docker.sock"
+
+  	TESTCONTAINERS_RYUK_DISABLED = "true"          // already added earlier
+  	TESTCONTAINERS_CHECKS_DISABLE = "true"         // already added earlier
+
+  	// ✅ Force unix-socket client strategy (prevents Desktop/NullPointer path)
+  	TESTCONTAINERS_DOCKER_CLIENT_STRATEGY = "org.testcontainers.dockerclient.UnixSocketClientProviderStrategy"
+
+  	// ✅ Ensure no TLS desktop vars confuse detection
+  	DOCKER_TLS_VERIFY = ""
+  	DOCKER_CERT_PATH = ""
   }
 
   triggers { pollSCM('H/1 * * * *') }
@@ -29,8 +40,19 @@ pipeline {
     stage('Build & Test') {
       steps {
         sh '''
-          chmod +x mvnw
-          ./mvnw -V -B -DskipTests=false clean package
+          	set -euxo pipefail
+      	  	id && groups
+          	ls -l /var/run/docker.sock || true
+      		echo "DOCKER_HOST=${DOCKER_HOST}"
+      		echo "TESTCONTAINERS_*:"
+      		env | grep -E "TESTCONTAINERS|DOCKER_" || true
+
+      		# prove docker works for this shell (same env as Maven)
+      		docker info --format "ServerVersion: {{.ServerVersion}}"
+      		docker run --rm busybox:latest echo docker-ok || true
+
+      		chmod +x mvnw
+      		./mvnw -V -B -DskipTests=false clean package
         '''
       }
     }
