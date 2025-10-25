@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "VEHICLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "VEHICLE_TYPE")
+@DiscriminatorColumn(name = "VEHICLE_KIND")
 public abstract class Vehicle {
 	
 	@Id

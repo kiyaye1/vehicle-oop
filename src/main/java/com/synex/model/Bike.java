@@ -4,7 +4,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("Bike")
+@DiscriminatorValue("BIKE")
 public class Bike extends Vehicle {
 	
 	public Bike() {

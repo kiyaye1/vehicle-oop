@@ -52,6 +52,11 @@ spec:
       labels:
         app: vehicle-app
     spec:
+      # wait until Oracle is accepting connections on 1521
+      initContainers:
+        - name: wait-for-oracle
+          image: busybox:1.36
+          command: ['sh', '-lc', 'for i in $(seq 1 120); do nc -z oracle 1521 && echo "oracle up" && exit 0; echo "waiting for oracle..."; sleep 3; done; echo "oracle not ready"; exit 1']
       containers:
         - name: vehicle-app
           image: kiyaye1/vehicle-oop:latest
@@ -59,6 +64,7 @@ spec:
           ports:
             - containerPort: 8282
           env:
+            # ---- DB creds/URL from your secret (keep as-is) ----
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -74,3 +80,33 @@ spec:
                 secretKeyRef:
                   name: vehicle-db-secret
                   key: SPRING_DATASOURCE_PASSWORD
+
+            # ---- Make Spring run data.sql after schema is ready ----
+            - name: SPRING_SQL_INIT_MODE
+              value: "always"
+            - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
+              value: "true"
+            # If you manage schema via JPA, keep update (or validate / none)
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+
+            # Extra logs to confirm script execution (optional)
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC
+              value: "DEBUG"
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_BOOT_SQL_INIT
+              value: "DEBUG"
+
+          # Basic probes (tune if you like)
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8282
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8282
+            initialDelaySeconds: 40
+            periodSeconds: 10
+
