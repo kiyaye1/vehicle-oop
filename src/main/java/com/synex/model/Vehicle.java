@@ -34,7 +34,7 @@ public abstract class Vehicle {
 	
 	public Vehicle(String name, String kind, String model, double price) {
 		this.name = name;
-		this.type = kind;
+		this.kind = kind;
 		this.model = model;
 		this.price = price;
 	}
